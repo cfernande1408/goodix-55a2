@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.pgm
+*.dll
+*.sys
+*.bin
+win-driver/
