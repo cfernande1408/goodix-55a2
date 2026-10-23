@@ -16,8 +16,10 @@ Work in progress to bring the **Goodix 27c6:55a2** fingerprint sensor
       enough; the Windows driver runs a **DAC calibration**
       (`MilanSetRegDac` / `dacAdjust`) between config upload and capture.
       That sequence still has to be reverse-engineered.
-- [ ] Replicate DAC calibration -> real images.
-- [ ] libfprint C driver.
+- [x] Replicate DAC calibration -> real images (config_win.hex).
+- [x] Auto finger-detection + capture (software FDT) - capture_auto.py
+- [x] Image merge/background-subtract - clean fingerprint
+- [ ] libfprint C driver (port the working Python reference)
 
 ## How to run
 These scripts import `goodix`, `protocol`, `tool`, `driver_5503` from
