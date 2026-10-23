@@ -36,3 +36,24 @@ Tried configs 0x58, 0x90, 0x70 -> every frame all-zero (7684 B, 5120 px, 0).
 2. Replicate that sequence in capture_cfg.py.
 3. libfprint C driver.
 Alt: reverse MilanFSeries / MilanSetRegDac in Wbdi.dll with Ghidra.
+
+## BREAKTHROUGH (2026-10-23): real image captured on Linux
+- Missing piece was the DAC calibration, baked into the DEVICE_CONFIG,
+  NOT a separate WRITE_REG sequence.
+- Got it by letting the Windows driver re-provision the sensor (VirtualBox
+  USB passthrough + VID:PID filter), then capturing a fresh init with
+  `tshark -i usbmonN` while disabling/enabling the device in Device Manager.
+- The Windows UPLOAD_CONFIG (header 0x30, 256 B) has the real per-sensor
+  DAC/gain values. Saved as config_win.hex. Checksum = 0x10000-(0xA5A5+sum16).
+- After re-flashing community fw (10062)+dev PSK, uploading config_win.hex
+  -> sensor returns a REAL image. Capture via capture_win.py.
+- Geometry: frame = 14788 B over TLS -> 9856 px = 88 x 112.
+- Image comes as TWO halves (~44x112 each) separated by a zero strip;
+  crop one half. diff(finger-empty) shows clear ridges + core.
+- FDT finger-detection thresholds (real, from pcap): FDT_DOWN base
+  0c0180b980b180b880b280b480b180b280ae80ae80a6 ; still to wire up.
+
+## TODO
+- Crop/merge the two halves and orient the image.
+- Calibrate FDT thresholds for auto finger-detection.
+- C driver for libfprint (port init+config+capture+FDT) + NBIS matching.
